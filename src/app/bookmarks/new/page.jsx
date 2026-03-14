@@ -1,11 +1,11 @@
-import BookmarkForm from "../components/BookmarkForm";
 import { createBookmarkAction } from "../actions";
+import BookmarksForm from "../components/BookmarksForm";
 
-export default function NewBookmarkPage() {
+export default function Page() {
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-6">New Bookmark</h1>
-      <BookmarkForm action={createBookmarkAction} />
+      <h1 className="text-2xl font-bold mb-4">New Bookmark</h1>
+      <BookmarksForm action={createBookmarkAction} />
     </div>
   );
 }

@@ -1,16 +1,13 @@
-import { getBookmarkById } from "../service";
-import BookmarkDetails from "../components/BookmarkDetails";
+import { getBookmark } from "../service";
+import BookmarksDetails from "../components/BookmarksDetails";
 
-export default async function BookmarkDetailsPage({ params }) {
+export default async function Page({ params }) {
   const { id } = await params;
-  const bookmark = await getBookmarkById(id);
-
-  
+  const bookmark = await getBookmark(id);
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-6">Bookmark Details</h1>
-      <BookmarkDetails bookmark={bookmark} />
+      <BookmarksDetails bookmark={bookmark} />
     </div>
   );
 }

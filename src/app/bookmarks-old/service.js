@@ -1,26 +1,26 @@
 const BASE_URL = "http://localhost:9090/api/bookmarks";
 
-export async function getBookmarks() {
+export async function getAllBookmarks() {
   const res = await fetch(BASE_URL, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch bookmarks");
   return res.json();
 }
 
-export async function getBookmark(id) {
-  const URL = `${BASE_URL}/${id}`;
-  console.info("URL", URL);
-  const res = await fetch(URL, { cache: "no-store" });
-  if (!res.ok) throw new Error("Failed to fetch bookmark", res);
+export async function getBookmarkById(id) {
+  const url = `${BASE_URL}/${id}`;
+  console.info(url);
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch bookmark");
   return res.json();
 }
 
 export async function createBookmark(data) {
   const res = await fetch(BASE_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json" },  
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Failed to create bookmark");
+  if (!res.ok) throw new Error("Failed to create bookmark: ", JOSN.stringify(res, null, 2));
   return res.json();
 }
 
@@ -37,5 +37,4 @@ export async function updateBookmark(id, data) {
 export async function deleteBookmark(id) {
   const res = await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
   if (!res.ok) throw new Error("Failed to delete bookmark");
-  return true;
 }

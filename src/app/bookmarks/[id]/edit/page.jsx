@@ -1,17 +1,16 @@
-import { getBookmarkById } from "../../service";
-import BookmarkForm from "../../components/BookmarkForm";
+import { getBookmark } from "../../service";
 import { updateBookmarkAction } from "../../actions";
+import BookmarksForm from "../../components/BookmarksForm";
 
-export default async function EditBookmarkPage({ params }) {
-  const { id } = await params;  
-  const bookmark = await getBookmarkById(id);
-  console.info(bookmark);
-  const boundAction = updateBookmarkAction.bind(null, id);  
+export default async function Page({ params }) {
+  const bookmark = await getBookmark(params.id);
+
+  const action = updateBookmarkAction.bind(null, params.id);
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-6">Edit Bookmark</h1>
-      <BookmarkForm action={boundAction} initialData={bookmark} />
+      <h1 className="text-2xl font-bold mb-4">Edit Bookmark</h1>
+      <BookmarksForm action={action} defaultValues={bookmark} />
     </div>
   );
 }

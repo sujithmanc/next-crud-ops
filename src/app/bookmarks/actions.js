@@ -1,45 +1,11 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { z } from "zod";
-import { createBookmark, updateBookmark, deleteBookmark } from "./service";
+import { revalidatePath } from "next/cache";
 
-const BookmarkSchema = z.object({
-  title: z
-    .string()
-    .min(1, "Title must not be blank"),
+const BASE_URL = "http://localhost:9090/api/bookmarks";
 
-  uri: z
-    .string()
-    .min(1, "URI must not be blank"),
-
-  logo: z
-    .string()
-    .optional(),
-
-  altText: z
-    .string()
-    .min(1, "altText must not be blank")
-    .length(2, "altText must be exactly 2 characters"),
-
-  altTextColor: z
-    .string()
-    .regex(/^#([A-Fa-f0-9]{6})$/, "altTextColor must be a valid hex color like #0000FF")
-    .optional()
-    .default("#0000FF"),
-});
-
-
-function formatZodErrors(zodError) {
-  return zodError.errors.map((err) => ({
-    field:     err.path[0],
-    errorCode: err.message,
-  }));
-}
-
-
-export async function createBookmarkAction(prevState, formData) {
-  const raw = {
+export async function createBookmarkAction(formData) {
+  const data = {
     title: formData.get("title"),
     uri: formData.get("uri"),
     logo: formData.get("logo"),
@@ -47,18 +13,17 @@ export async function createBookmarkAction(prevState, formData) {
     altTextColor: formData.get("altTextColor"),
   };
 
-  const result = BookmarkSchema.safeParse(raw);
-  if (!result.success) {
-    console.info(result)
-    return { errors: result.error.flatten().fieldErrors, values : raw };
-  }
+  await fetch(BASE_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
 
-  await createBookmark(result.data);
-  redirect("/bookmarks");
+  revalidatePath("/bookmarks");
 }
 
-export async function updateBookmarkAction(id, prevState, formData) {
-  const raw = {
+export async function updateBookmarkAction(id, formData) {
+  const data = {
     title: formData.get("title"),
     uri: formData.get("uri"),
     logo: formData.get("logo"),
@@ -66,17 +31,16 @@ export async function updateBookmarkAction(id, prevState, formData) {
     altTextColor: formData.get("altTextColor"),
   };
 
-  const result = BookmarkSchema.safeParse(raw);
+  await fetch(`${BASE_URL}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
 
-  if (!result.success) {
-    return { errors: result.error.flatten().fieldErrors, values : raw };
-  }
-
-  await updateBookmark(id, result.data);
-  redirect("/bookmarks");
+  revalidatePath("/bookmarks");
 }
 
 export async function deleteBookmarkAction(id) {
-  await deleteBookmark(id);
-  redirect("/bookmarks");
+  await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
+  revalidatePath("/bookmarks");
 }
